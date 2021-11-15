@@ -1,4 +1,4 @@
-# MimicAPI - API REST created based on Udemy REST API classes
+# MimicAPI - API REST created on Udemy REST API classes
 <hr>
 
 <h3>Overview ⮯</h3>
