@@ -28,6 +28,9 @@ namespace MimicAPI.Migrations
                     b.Property<DateTime?>("Att")
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
 

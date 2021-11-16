@@ -11,6 +11,7 @@ namespace MimicAPI.Models
         public string Name { get; set; }
         public int Score { get; set; }
         public bool Active { get; set; }
+        public DateTime Created { get; set; }
         public DateTime? Att { get; set; }
     }
 }

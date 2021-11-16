@@ -38,9 +38,10 @@ namespace MimicAPI.Controllers
         // -- /api/words (POST: id, name, active, score, date)
         [Route("")]
         [HttpPost]
-        public ActionResult Add(Word word)
+        public ActionResult Add([FromBody]Word word)
         {
             _context.Words.Add(word);
+            _context.SaveChanges();
 
             return Ok();
         }
@@ -48,10 +49,11 @@ namespace MimicAPI.Controllers
         // -- /api/words/{id} (PUT: id, name, active, score, date)
         [Route("{id}")]
         [HttpPut]
-        public ActionResult Update(int id, Word word)
+        public ActionResult Update(int id, [FromBody]Word word)
         {
             word.Id = id;
             _context.Words.Update(word);
+            _context.SaveChanges();
 
             return Ok();
         }
@@ -62,6 +64,7 @@ namespace MimicAPI.Controllers
         public ActionResult Delete(int id)
         {
             _context.Words.Remove(_context.Words.Find(id));
+            _context.SaveChanges();
 
             return Ok();
         }
