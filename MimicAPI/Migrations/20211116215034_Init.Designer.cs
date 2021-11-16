@@ -9,8 +9,8 @@ using MimicAPI.Database;
 namespace MimicAPI.Migrations
 {
     [DbContext(typeof(MimicContext))]
-    [Migration("20211115200613_Initial")]
-    partial class Initial
+    [Migration("20211116215034_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -28,6 +28,9 @@ namespace MimicAPI.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime?>("Att")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("Created")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
