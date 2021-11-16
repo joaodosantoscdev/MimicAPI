@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MimicAPI.Database;
 using MimicAPI.Models;
 using System;
@@ -32,7 +33,13 @@ namespace MimicAPI.Controllers
         [HttpGet]
         public ActionResult GetById(int id)
         {
-            return Ok(_context.Words.Find(id));
+            var obj = _context.Words.Find(id);
+
+            if (obj == null)
+            {
+                return NotFound();
+            }
+            return Ok();
         }
 
         // -- /api/words (POST: id, name, active, score, date)
@@ -43,7 +50,7 @@ namespace MimicAPI.Controllers
             _context.Words.Add(word);
             _context.SaveChanges();
 
-            return Ok();
+            return Created($"/api/words/{word.Id}", word);
         }
 
         // -- /api/words/{id} (PUT: id, name, active, score, date)
@@ -51,6 +58,13 @@ namespace MimicAPI.Controllers
         [HttpPut]
         public ActionResult Update(int id, [FromBody]Word word)
         {
+            var obj = _context.Words.AsNoTracking().FirstOrDefault(a=> a.Id == id);
+
+            if (obj == null)
+            {
+                return NotFound();
+            }
+
             word.Id = id;
             _context.Words.Update(word);
             _context.SaveChanges();
@@ -63,10 +77,18 @@ namespace MimicAPI.Controllers
         [HttpDelete]
         public ActionResult Delete(int id)
         {
-            _context.Words.Remove(_context.Words.Find(id));
+            var obj = _context.Words.Find(id);
+
+            if (obj == null)
+            {
+                return NotFound();
+            }
+
+            obj.Active = false;
+            _context.Words.Update(obj);
             _context.SaveChanges();
 
-            return Ok();
+            return NoContent();
         }
     }
 }
