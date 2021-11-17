@@ -19,12 +19,17 @@ namespace MimicAPI.Controllers
             _context = context;
         }
 
-        //APP -- api/words/
+        //APP -- api/words?date=yyyy-MM-dd
         [Route("")]
         [HttpGet]
-        public ActionResult GetAll()
+        public ActionResult GetAll(DateTime? date)
         {
-            return Ok(_context.Words);
+            var item = _context.Words.AsQueryable();
+            if (date.HasValue)
+            {
+                item = item.Where(i => i.Created > date.Value);
+            }
+            return Ok(item);
         }
 
 
