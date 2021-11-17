@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MimicAPI.Database;
+using MimicAPI.Helpers;
 using MimicAPI.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,12 +24,31 @@ namespace MimicAPI.Controllers
         //APP -- api/words?date=yyyy-MM-dd
         [Route("")]
         [HttpGet]
-        public ActionResult GetAll(DateTime? date)
+        public ActionResult GetAll([FromQuery]WordUrlQuery query)
         {
             var item = _context.Words.AsQueryable();
-            if (date.HasValue)
+            if (query.Date.HasValue)
             {
-                item = item.Where(i => i.Created > date.Value);
+                item = item.Where(i => i.Created > query.Date.Value);
+            }
+
+            if (query.PgNumber.HasValue)
+            {
+                var qntTotalRegis = item.Count(); 
+                item = item.Skip((query.PgNumber.Value - 1) * query.PgRegister.Value).Take(query.PgRegister.Value);
+
+                var pagination = new Pagination();
+                pagination.NumPage = query.PgNumber.Value;
+                pagination.RegisPage = query.PgRegister.Value;
+                pagination.TotalRegis = qntTotalRegis;
+                pagination.TotalPages = (int)Math.Ceiling( (double)qntTotalRegis / query.PgRegister.Value );
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(pagination));
+
+                if (query.PgNumber > pagination.TotalPages)
+                {
+                    return NotFound();
+                }
             }
             return Ok(item);
         }
@@ -63,7 +84,7 @@ namespace MimicAPI.Controllers
         [HttpPut]
         public ActionResult Update(int id, [FromBody]Word word)
         {
-            var obj = _context.Words.AsNoTracking().FirstOrDefault(a=> a.Id == id);
+            var obj = _context.Words.AsNoTracking().FirstOrDefault(a => a.Id == id);
 
             if (obj == null)
             {
