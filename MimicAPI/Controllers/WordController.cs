@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using MimicAPI.Database;
 using MimicAPI.Helpers;
 using MimicAPI.Models;
+using MimicAPI.Repositories.Interfaces;
 using Newtonsoft.Json;
 using System;
 using System.Linq;
@@ -13,10 +13,10 @@ namespace MimicAPI.Controllers
     public class PalavrasController : ControllerBase
     {
 
-        private readonly MimicContext _context;
-        public PalavrasController(MimicContext context)
+        private readonly IWordRepository _repository;
+        public PalavrasController(IWordRepository repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
         //APP -- api/words?date=yyyy-MM-dd
@@ -24,31 +24,16 @@ namespace MimicAPI.Controllers
         [HttpGet]
         public ActionResult GetAll([FromQuery]WordUrlQuery query)
         {
-            var item = _context.Words.AsQueryable();
-            if (query.Date.HasValue)
+            var item = _repository.GetAllWords(query);
+
+            if (query.PgNumber > item.Pagination.TotalPages)
             {
-                item = item.Where(i => i.Created > query.Date.Value);
+                return NotFound();
             }
 
-            if (query.PgNumber.HasValue)
-            {
-                var qntTotalRegis = item.Count(); 
-                item = item.Skip((query.PgNumber.Value - 1) * query.PgRegister.Value).Take(query.PgRegister.Value);
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(item.Pagination));
 
-                var pagination = new Pagination();
-                pagination.NumPage = query.PgNumber.Value;
-                pagination.RegisPage = query.PgRegister.Value;
-                pagination.TotalRegis = qntTotalRegis;
-                pagination.TotalPages = (int)Math.Ceiling( (double)qntTotalRegis / query.PgRegister.Value );
-
-                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(pagination));
-
-                if (query.PgNumber > pagination.TotalPages)
-                {
-                    return NotFound();
-                }
-            }
-            return Ok(item);
+            return Ok(item.ToList());
         }
 
 
@@ -57,13 +42,13 @@ namespace MimicAPI.Controllers
         [HttpGet]
         public ActionResult GetById(int id)
         {
-            var obj = _context.Words.Find(id);
+            var obj = _repository.GetWord(id);
 
             if (obj == null)
             {
                 return NotFound();
             }
-            return Ok();
+            return Ok(obj);
         }
 
         // -- /api/words (POST: id, name, active, score, date)
@@ -71,8 +56,7 @@ namespace MimicAPI.Controllers
         [HttpPost]
         public ActionResult Add([FromBody]Word word)
         {
-            _context.Words.Add(word);
-            _context.SaveChanges();
+            _repository.Add(word);
 
             return Created($"/api/words/{word.Id}", word);
         }
@@ -82,7 +66,7 @@ namespace MimicAPI.Controllers
         [HttpPut]
         public ActionResult Update(int id, [FromBody]Word word)
         {
-            var obj = _context.Words.AsNoTracking().FirstOrDefault(a => a.Id == id);
+            var obj = _repository.GetWord(id);
 
             if (obj == null)
             {
@@ -90,9 +74,8 @@ namespace MimicAPI.Controllers
             }
 
             word.Id = id;
-            _context.Words.Update(word);
-            _context.SaveChanges();
-
+            _repository.Update(word);
+            
             return Ok();
         }
 
@@ -101,16 +84,14 @@ namespace MimicAPI.Controllers
         [HttpDelete]
         public ActionResult Delete(int id)
         {
-            var obj = _context.Words.Find(id);
+            var obj = _repository.GetWord(id);
 
             if (obj == null)
             {
                 return NotFound();
             }
 
-            obj.Active = false;
-            _context.Words.Update(obj);
-            _context.SaveChanges();
+            _repository.Delete(id);
 
             return NoContent();
         }

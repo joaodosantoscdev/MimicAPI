@@ -9,6 +9,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MimicAPI.Repositories;
+using MimicAPI.Repositories.Interfaces;
 
 namespace MimicAPI
 {
@@ -23,6 +25,7 @@ namespace MimicAPI
             });
 
             services.AddControllers();
+            services.AddScoped<IWordRepository, WordRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
