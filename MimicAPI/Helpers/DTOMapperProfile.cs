@@ -13,6 +13,8 @@ namespace MimicAPI.Helpers
         public DTOMapperProfile()
         {
             CreateMap<Word, WordDTO>();
+            CreateMap<PaginationList<Word>, PaginationList<WordDTO>>();
+
         }
     }
 }
