@@ -25,22 +25,20 @@ namespace MimicAPI.Controllers
         }
 
         //APP -- api/words?date=yyyy-MM-dd
-        [Route("")]
-        [HttpGet]
+        [HttpGet("", Name = "GetAll")]
         public ActionResult GetAll([FromQuery]WordUrlQuery query)
         {
             var item = _repository.GetAllWords(query);
 
-            if (query.PgNumber > item.Pagination.TotalPages)
+            if (item.Results.Count == 0)
             {
                 return NotFound();
             }
 
-            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(item.Pagination));
+            PaginationList<WordDTO> list = CreateLinksListWordDTO(query, item);
 
-            return Ok(item.ToList());
+            return Ok(list);
         }
-
 
         //WEB -- api/words/{id}
         [HttpGet("{id}", Name = "GetWord")]
@@ -54,8 +52,6 @@ namespace MimicAPI.Controllers
             }
 
             WordDTO wordDTO = _mapper.Map<Word, WordDTO>(obj);
-
-            wordDTO.Links = new List<LinkDTO>();
             wordDTO.Links.Add(
                 new LinkDTO("self", Url.Link("GetWord", new { id = wordDTO.Id }), "GET")
                 );
@@ -76,7 +72,13 @@ namespace MimicAPI.Controllers
         {
             _repository.Add(word);
 
-            return Created($"/api/words/{word.Id}", word);
+            WordDTO wordDTO = _mapper.Map<Word, WordDTO>(word);
+            wordDTO.Links.Add(
+                new LinkDTO("self", Url.Link("GetWord", new { id = wordDTO.Id }), "GET")
+                );
+
+
+            return Created($"/api/words/{word.Id}", wordDTO);
         }
 
         // -- /api/words/{id} (PUT: id, name, active, score, date)
@@ -92,8 +94,13 @@ namespace MimicAPI.Controllers
 
             word.Id = id;
             _repository.Update(word);
-            
-            return Ok();
+
+            WordDTO wordDTO = _mapper.Map<Word, WordDTO>(word);
+            wordDTO.Links.Add(
+                new LinkDTO("self", Url.Link("GetWord", new { id = wordDTO.Id }), "GET")
+                );
+
+            return Ok(word);
         }
 
         // -- api/words/{id} (DELETE)
@@ -110,6 +117,38 @@ namespace MimicAPI.Controllers
             _repository.Delete(id);
 
             return NoContent();
+        }
+
+        // GETALL METHOD - PAGINATION NEXT AND PREV
+        private PaginationList<WordDTO> CreateLinksListWordDTO(WordUrlQuery query, PaginationList<Word> item)
+        {
+            var list = _mapper.Map<PaginationList<Word>, PaginationList<WordDTO>>(item);
+
+            foreach (var word in list.Results)
+            {
+                word.Links = new List<LinkDTO>();
+                word.Links.Add(new LinkDTO("self", Url.Link("GetWord", new { id = word.Id }), "GET"));
+            }
+
+            list.Links.Add(new LinkDTO("self", Url.Link("GetAll", query), "GET"));
+
+            if (item.Pagination != null)
+            {
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(item.Pagination));
+                if (query.PgNumber + 1 <= item.Pagination.TotalPages)
+                {
+                    var queryString = new WordUrlQuery() { PgNumber = query.PgNumber + 1, PgRegister = query.PgRegister, Date = query.Date };
+                    list.Links.Add(new LinkDTO("next", Url.Link("GetAll", queryString), "GET"));
+                }
+
+                if (query.PgNumber - 1 > 0)
+                {
+                    var queryString = new WordUrlQuery() { PgNumber = query.PgNumber - 1, PgRegister = query.PgRegister, Date = query.Date };
+                    list.Links.Add(new LinkDTO("prev", Url.Link("GetAll", queryString), "GET"));
+                }
+            }
+
+            return list;
         }
     }
 }
