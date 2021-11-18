@@ -10,6 +10,13 @@ namespace MimicAPI.Models.DTO
         public string Ref { get; set; }
         public string Method { get; set; }
         public string Href { get; set; }
+
+        public LinkDTO(string @ref, string method, string href)
+        {
+            Ref = @ref;
+            Method = method;
+            Href = href;
+        }
     }
 
 }

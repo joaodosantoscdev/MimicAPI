@@ -1,10 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MimicAPI.Helpers;
 using MimicAPI.Models;
+using MimicAPI.Models.DTO;
 using MimicAPI.Repositories.Interfaces;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace MimicAPI.Controllers
@@ -14,9 +17,11 @@ namespace MimicAPI.Controllers
     {
 
         private readonly IWordRepository _repository;
-        public PalavrasController(IWordRepository repository)
+        private readonly IMapper _mapper;
+        public PalavrasController(IWordRepository repository, IMapper mapper)
         {
             _repository = repository;
+            _mapper = mapper;
         }
 
         //APP -- api/words?date=yyyy-MM-dd
@@ -48,7 +53,12 @@ namespace MimicAPI.Controllers
             {
                 return NotFound();
             }
-            return Ok(obj);
+
+            WordDTO wordDTO = _mapper.Map<Word, WordDTO>(obj);
+            wordDTO.Links = new List<LinkDTO>();
+            wordDTO.Links.Add(new LinkDTO("self", $"https://localhost:44362/api/words/{wordDTO.Id}", "GET"));
+
+            return Ok(wordDTO);
         }
 
         // -- /api/words (POST: id, name, active, score, date)
