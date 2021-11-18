@@ -43,8 +43,7 @@ namespace MimicAPI.Controllers
 
 
         //WEB -- api/words/{id}
-        [Route("{id}")]
-        [HttpGet]
+        [HttpGet("{id}", Name = "GetWord")]
         public ActionResult GetById(int id)
         {
             var obj = _repository.GetWord(id);
@@ -55,8 +54,17 @@ namespace MimicAPI.Controllers
             }
 
             WordDTO wordDTO = _mapper.Map<Word, WordDTO>(obj);
+
             wordDTO.Links = new List<LinkDTO>();
-            wordDTO.Links.Add(new LinkDTO("self", $"https://localhost:44362/api/words/{wordDTO.Id}", "GET"));
+            wordDTO.Links.Add(
+                new LinkDTO("self", Url.Link("GetWord", new { id = wordDTO.Id }), "GET")
+                );
+            wordDTO.Links.Add(
+                new LinkDTO("update", Url.Link("UpdateWord", new { id = wordDTO.Id }), "PUT")
+                );
+            wordDTO.Links.Add(
+                new LinkDTO("delete", Url.Link("DeleteWord", new { id = wordDTO.Id }), "DELETE")
+                );
 
             return Ok(wordDTO);
         }
@@ -72,8 +80,7 @@ namespace MimicAPI.Controllers
         }
 
         // -- /api/words/{id} (PUT: id, name, active, score, date)
-        [Route("{id}")]
-        [HttpPut]
+        [HttpPut("{id}", Name = "UpdateWord")]
         public ActionResult Update(int id, [FromBody]Word word)
         {
             var obj = _repository.GetWord(id);
@@ -90,8 +97,7 @@ namespace MimicAPI.Controllers
         }
 
         // -- api/words/{id} (DELETE)
-        [Route("{id}")]
-        [HttpDelete]
+        [HttpDelete("{id}", Name = "DeleteWord")]
         public ActionResult Delete(int id)
         {
             var obj = _repository.GetWord(id);
