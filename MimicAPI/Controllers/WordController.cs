@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using MimicAPI.Helpers;
 using MimicAPI.Models;
 using MimicAPI.Models.DTO;
@@ -8,7 +7,6 @@ using MimicAPI.Repositories.Interfaces;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace MimicAPI.Controllers
 {
@@ -72,7 +70,7 @@ namespace MimicAPI.Controllers
         {
             if (word == null)
             {
-                return BadRequest();
+                return new UnsupportedMediaTypeResult();
             }
 
             if (!ModelState.IsValid)
@@ -102,6 +100,16 @@ namespace MimicAPI.Controllers
             if (obj == null)
             {
                 return NotFound();
+            }
+
+            if (word == null)
+            {
+                return new UnsupportedMediaTypeResult();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return UnprocessableEntity(ModelState);
             }
 
             word.Id = id;
