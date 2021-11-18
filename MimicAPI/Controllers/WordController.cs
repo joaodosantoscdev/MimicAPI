@@ -70,6 +70,18 @@ namespace MimicAPI.Controllers
         [HttpPost]
         public ActionResult Add([FromBody]Word word)
         {
+            if (word == null)
+            {
+                return BadRequest();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return UnprocessableEntity(ModelState);
+            }
+
+            word.Active = true;
+            word.Created = DateTime.Now;
             _repository.Add(word);
 
             WordDTO wordDTO = _mapper.Map<Word, WordDTO>(word);
@@ -93,6 +105,9 @@ namespace MimicAPI.Controllers
             }
 
             word.Id = id;
+            word.Active = obj.Active;
+            word.Created = obj.Created;
+            word.Att = DateTime.Now;
             _repository.Update(word);
 
             WordDTO wordDTO = _mapper.Map<Word, WordDTO>(word);
