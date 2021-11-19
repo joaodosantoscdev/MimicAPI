@@ -1,22 +1,27 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using MimicAPI.Helpers;
-using MimicAPI.Models;
-using MimicAPI.Models.DTO;
-using MimicAPI.Repositories.Interfaces;
+using MimicAPI.V1.Models;
+using MimicAPI.V1.Models.DTO;
+using MimicAPI.V1.Repositories.Interfaces;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 
-namespace MimicAPI.Controllers
+namespace MimicAPI.V1.Controllers
 {
-    [Route("api/words")]
-    public class PalavrasController : ControllerBase
+
+    //  -- /api/v1.0/words
+
+    [ApiController]
+    [Route("api/v{version:apiVersion}/[controller]")]
+    [ApiVersion("1.0")]
+    public class WordsController : ControllerBase
     {
 
         private readonly IWordRepository _repository;
         private readonly IMapper _mapper;
-        public PalavrasController(IWordRepository repository, IMapper mapper)
+        public WordsController(IWordRepository repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;
@@ -149,8 +154,10 @@ namespace MimicAPI.Controllers
 
             foreach (var word in list.Results)
             {
-                word.Links = new List<LinkDTO>();
-                word.Links.Add(new LinkDTO("self", Url.Link("GetWord", new { id = word.Id }), "GET"));
+                word.Links = new List<LinkDTO>
+                {
+                    new LinkDTO("self", Url.Link("GetWord", new { id = word.Id }), "GET")
+                };
             }
 
             list.Links.Add(new LinkDTO("self", Url.Link("GetAll", query), "GET"));

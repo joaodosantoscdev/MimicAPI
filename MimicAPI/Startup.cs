@@ -4,20 +4,20 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MimicAPI.Database;
-using MimicAPI.Repositories;
-using MimicAPI.Repositories.Interfaces;
+using MimicAPI.V1.Repositories;
+using MimicAPI.V1.Repositories.Interfaces;
 using AutoMapper;
 using MimicAPI.Helpers;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MimicAPI
 {
     public class Startup
     {
         // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            //Auto-mapper CONFIG
+            //AUTO-MAPPER CONFIG
             #region  
             var config = new MapperConfiguration(cfg =>
             {
@@ -32,7 +32,18 @@ namespace MimicAPI
             });
 
             services.AddControllers();
+
             services.AddScoped<IWordRepository, WordRepository>();
+
+            // API VERSIONING CONFIG
+            #region
+            services.AddApiVersioning(cfg => {
+                cfg.ReportApiVersions = true;
+                cfg.AssumeDefaultVersionWhenUnspecified = true;
+                cfg.DefaultApiVersion = new ApiVersion(1, 0);
+            });
+            #endregion
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
