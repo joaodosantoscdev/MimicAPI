@@ -1,14 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MimicAPI.Database;
 using MimicAPI.Helpers;
-using MimicAPI.Models;
-using MimicAPI.Repositories.Interfaces;
+using MimicAPI.V1.Models;
+using MimicAPI.V1.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace MimicAPI.Repositories
+namespace MimicAPI.V1.Repositories
 {
     public class WordRepository : IWordRepository
     {
@@ -33,11 +33,13 @@ namespace MimicAPI.Repositories
                 var qntTotalRegis = item.Count();
                 item = item.Skip((query.PgNumber.Value - 1) * query.PgRegister.Value).Take(query.PgRegister.Value);
 
-                var pagination = new Pagination();
-                pagination.NumPage = query.PgNumber.Value;
-                pagination.RegisPage = query.PgRegister.Value;
-                pagination.TotalRegis = qntTotalRegis;
-                pagination.TotalPages = (int)Math.Ceiling((double)qntTotalRegis / query.PgRegister.Value);
+                var pagination = new Pagination
+                {
+                    NumPage = query.PgNumber.Value,
+                    RegisPage = query.PgRegister.Value,
+                    TotalRegis = qntTotalRegis,
+                    TotalPages = (int)Math.Ceiling((double)qntTotalRegis / query.PgRegister.Value)
+                };
 
                 list.Pagination = pagination;
                
