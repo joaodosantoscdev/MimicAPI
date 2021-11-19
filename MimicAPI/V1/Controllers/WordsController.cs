@@ -7,6 +7,7 @@ using MimicAPI.V1.Repositories.Interfaces;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using Swashbuckle.AspNetCore;
 
 namespace MimicAPI.V1.Controllers
 {
@@ -15,6 +16,7 @@ namespace MimicAPI.V1.Controllers
 
     [ApiController]
     [Route("api/v{version:apiVersion}/[controller]")]
+    [ApiExplorerSettings(GroupName = "v1")]
     [ApiVersion("1.0")]
     public class WordsController : ControllerBase
     {
@@ -27,7 +29,6 @@ namespace MimicAPI.V1.Controllers
             _mapper = mapper;
         }
 
-        //APP -- api/words?date=yyyy-MM-dd
         [HttpGet("", Name = "GetAll")]
         public ActionResult GetAll([FromQuery]WordUrlQuery query)
         {

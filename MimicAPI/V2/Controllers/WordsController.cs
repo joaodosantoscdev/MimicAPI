@@ -11,6 +11,7 @@ namespace MimicAPI.V2.Controllers
 
     [ApiController]
     [Route("api/v{version:apiVersion}/[controller]")]
+    [ApiExplorerSettings(GroupName = "v2")]
     [ApiVersion("2.0")]
     public class WordsController : ControllerBase
     {
