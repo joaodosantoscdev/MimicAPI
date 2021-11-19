@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MimicAPI</name>
+    </assembly>
+    <members>
+        <member name="M:MimicAPI.V1.Controllers.WordsController.GetAll(MimicAPI.Helpers.WordUrlQuery)">
+            <summary>
+            Gets the list of all Words.
+            </summary>
+            <returns>The list of Words.</returns>
+        </member>
+    </members>
+</doc>
