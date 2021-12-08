@@ -18,7 +18,7 @@
 <h3>Overview ⮯</h3>
 <p>The REST API is based on a Mimic App, serving web/mobile, delivering, updating and posting words in the database and also, synchonizing the data, between the user local data and the server side database who can be updated when more words are added. It was added swagger for the api documentation, and versioning, pagination and hateoas to make more usefull for the final user, being in the third api maturity level.</p>
 <br>
-<h2>This project has concepts like :<h2>
+<h3>This project has concepts like :<h3>
 <ul>
   <li>Totally RESTFULL API ⬇</li>
   <li>API Pagination 🔧</li>
