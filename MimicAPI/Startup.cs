@@ -89,7 +89,7 @@ namespace MimicAPI
             {
                 app.UseDeveloperExceptionPage();
             }
-
+                
             app.UseRouting();
             app.UseStatusCodePages();
 
