@@ -30,7 +30,7 @@
 <p>You just need to git clone the project do the migrations for the 
   database update and set the url to your on localhost gate, to set the environment ready to run, and the most important, HAVE FUNN !🧑<p>
 <hr>
-<p>ATT: 30/11/2021 - 👨‍💻 João Vítor Carvalho</p>
+<p>ATT: 07/12/2021 - 👨‍💻 João Vítor Carvalho</p>
 <em>'This project has no commercial purposes, it was carried out only for the application of my studies'📚</em>
 <hr>
 <strong>----João Vítor Carvalho 👨‍💻 ---</strong>
